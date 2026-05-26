@@ -1,0 +1,28 @@
+# Virtual Environments
+venv/
+.venv/
+.venv-1/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Audio outputs
+*.mp3
+*.wav
+
+# Chroma database
+chroma_db/
+
+# Environment variables
+.env
+
+# Streamlit cache
+.streamlit/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

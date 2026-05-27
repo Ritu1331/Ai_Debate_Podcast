@@ -415,11 +415,6 @@ Planned upgrades:
 
 ---
 
-# 🤝 Contributing
-
-Contributions are welcome.
-
-
 # 👨‍💻 Author
 
 Developed by **Ritu Patel**

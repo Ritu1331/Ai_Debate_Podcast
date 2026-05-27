@@ -6,6 +6,7 @@ import streamlit as st
 import asyncio
 import os
 import time
+import re
 
 from debate.generator import generate_debate
 from debate.parser import parse_debate
@@ -224,7 +225,6 @@ st.markdown(
         border-radius: 18px !important;
     }
 
-
     </style>
     """,
     unsafe_allow_html=True
@@ -381,7 +381,15 @@ if generate and topic:
 
         "Alex": "en-US-GuyNeural",
 
-        "Jamie": "en-US-JennyNeural"
+        "Jamie": "en-US-JennyNeural",
+
+        "Alex Chen": "en-US-GuyNeural",
+
+        "Jamie Patel": "en-US-JennyNeural",
+
+        "Rachel": "en-US-AriaNeural",
+
+        "Rachel Lee": "en-US-AriaNeural"
     }
 
     audio_files = []
@@ -402,30 +410,94 @@ if generate and topic:
 
             text = dialogue["text"]
 
-            # CLEAN TEXT
+            # =====================================
+            # REMOVE MARKDOWN
+            # =====================================
+
+            text = text.replace("**", "")
+
+            # =====================================
+            # REMOVE SPEAKER LABELS
+            # =====================================
+
+            text = re.sub(
+
+                r"^[A-Za-z ,]+:\s*",
+
+                "",
+
+                text
+            )
+
+            # =====================================
+            # REMOVE BRACKET ACTIONS
+            # =====================================
+
+            text = re.sub(
+
+                r"\(.*?\)",
+
+                "",
+
+                text
+            )
+
+            # =====================================
+            # REMOVE EXTRA SPACES
+            # =====================================
+
+            text = re.sub(
+
+                r"\s+",
+
+                " ",
+
+                text
+            ).strip()
+
+            # =====================================
+            # HUMANIZE
+            # =====================================
+
             text = humanize_text(text)
 
             if not text.strip():
 
                 continue
 
+            # =====================================
             # DETECT EMOTION
+            # =====================================
+
             emotion = detect_emotion(text)
 
+            # =====================================
             # SELECT VOICE
+            # =====================================
+
             voice = voice_map.get(
+
                 speaker,
+
                 "en-US-GuyNeural"
             )
 
             output_file = f"audio_{i}.mp3"
 
+            # =====================================
             # GENERATE TTS
+            # =====================================
+
             asyncio.run(
+
                 generate_voice(
+
                     text=text,
+
                     voice=voice,
+
                     output_file=output_file,
+
                     emotion=emotion
                 )
             )

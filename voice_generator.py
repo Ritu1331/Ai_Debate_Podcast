@@ -10,20 +10,29 @@ async def generate_voice(
 ):
 
     # =====================================
-    # EMOTION SETTINGS
+    # DEFAULT SETTINGS
     # =====================================
 
     rate = "+0%"
     pitch = "+0Hz"
 
+    # =====================================
+    # EMOTION SETTINGS
+    # =====================================
+
     if emotion == "excited":
 
         rate = "+15%"
-        pitch = "+12Hz"
+        pitch = "+10Hz"
+
+    elif emotion == "happy":
+
+        rate = "+10%"
+        pitch = "+8Hz"
 
     elif emotion == "sad":
 
-        rate = "-10%"
+        rate = "-12%"
         pitch = "-10Hz"
 
     elif emotion == "angry":
@@ -31,13 +40,8 @@ async def generate_voice(
         rate = "+8%"
         pitch = "-8Hz"
 
-    elif emotion == "happy":
-
-        rate = "+10%"
-        pitch = "+8Hz"
-
     # =====================================
-    # NORMAL TTS
+    # EDGE TTS
     # =====================================
 
     communicate = edge_tts.Communicate(

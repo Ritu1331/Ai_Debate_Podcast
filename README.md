@@ -347,17 +347,9 @@ final_podcast.mp3
 
 # 📸 Screenshots
 
-Add screenshots inside:
+## Main Interface
 
-```text
-screenshots/
-```
-
-Then include:
-
-```markdown
 ![App Screenshot](screenshots/app.png)
-```
 
 ---
 

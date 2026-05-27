@@ -131,17 +131,40 @@ Ai_Debate_Podcast/
 
 # ⚙️ Technologies Used
 
-| Technology | Purpose |
-|---|---|
-| Streamlit | Frontend UI |
-| Groq | LLM |
-| ChromaDB | Vector Database |
-| LangChain | RAG Pipeline |
-| Sentence Transformers | Embeddings |
-| Edge-TTS | AI Voice Generation |
-| FFmpeg | Audio Processing |
+| Technology            | Purpose                   |
+| --------------------- | ------------------------- |
+| Groq LLM              | Debate generation         |
+| Streamlit             | Frontend UI               |
+| ChromaDB              | Vector database           |
+| LangChain             | RAG pipeline              |
+| Sentence Transformers | Embeddings                |
+| Edge-TTS              | Emotional voice synthesis |
+| FFmpeg                | Audio merging             |
+| Python                | Backend development       |
+
 
 ---
+# System Architecture
+Complete Pipeline:
+
+User Topic
+     ↓
+RAG Retrieval
+     ↓
+Groq LLM Debate Generation
+     ↓
+Debate Parsing
+     ↓
+Text Cleaning & Humanization
+     ↓
+Emotion Detection
+     ↓
+Edge-TTS Voice Generation
+     ↓
+Audio Merging
+     ↓
+Final Podcast Output
+
 
 # ⚙️ Installation
 

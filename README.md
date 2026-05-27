@@ -147,24 +147,45 @@ Ai_Debate_Podcast/
 # System Architecture
 Complete Pipeline:
 
-User Topic
-     ↓
-RAG Retrieval
-     ↓
-Groq LLM Debate Generation
-     ↓
-Debate Parsing
-     ↓
-Text Cleaning & Humanization
-     ↓
-Emotion Detection
-     ↓
-Edge-TTS Voice Generation
-     ↓
-Audio Merging
-     ↓
-Final Podcast Output
+```text
+┌──────────────────────────────┐
+│         User Topic           │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│        RAG Retrieval         │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│  Groq LLM Debate Generation  │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│       Debate Parsing         │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│ Text Cleaning & Humanization │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│      Emotion Detection       │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│ Edge-TTS Voice Generation    │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│        Audio Merging         │
+└──────────────┬───────────────┘
+               ↓
+┌──────────────────────────────┐
+│    Final Podcast Output      │
+└──────────────────────────────┘
+```
 
+---
 
 # ⚙️ Installation
 

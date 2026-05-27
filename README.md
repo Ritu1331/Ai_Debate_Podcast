@@ -437,26 +437,8 @@ Contributions are welcome.
 
 ---
 
-# 📜 License
-
-MIT License
-
----
-
 # 👨‍💻 Author
 
 Developed by **Ritu Patel**
 
-AI • NLP • Speech Technology Enthusiast 🚀
 
----
-
-# ⭐ Support
-
-If you like this project:
-
-⭐ Star the repository  
-🍴 Fork the project  
-📢 Share the project  
-
----

@@ -2,25 +2,55 @@ def detect_emotion(text):
 
     text = text.lower()
 
-    if "!" in text:
-        return "excited"
+    excited_words = [
 
-    elif any(word in text for word in [
-        "terrible",
-        "angry",
+        "amazing",
+        "excited",
+        "incredible",
+        "fantastic",
+        "wonderful",
+        "great"
+    ]
+
+    angry_words = [
+
+        "wrong",
         "ridiculous",
+        "terrible",
         "hate",
         "awful"
-    ]):
+    ]
+
+    sad_words = [
+
+        "sad",
+        "depressed",
+        "upset",
+        "unfortunate"
+    ]
+
+    happy_words = [
+
+        "happy",
+        "love",
+        "enjoy",
+        "beautiful"
+    ]
+
+    if any(word in text for word in excited_words):
+
+        return "excited"
+
+    if any(word in text for word in angry_words):
+
         return "angry"
 
-    elif any(word in text for word in [
-        "sad",
-        "worried",
-        "depressed",
-        "lonely",
-        "upset"
-    ]):
+    if any(word in text for word in sad_words):
+
         return "sad"
+
+    if any(word in text for word in happy_words):
+
+        return "happy"
 
     return "neutral"

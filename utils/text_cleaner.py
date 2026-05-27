@@ -1,25 +1,79 @@
 import re
+import random
 
-
-# =====================================================
-# HUMANIZE / CLEAN TEXT
-# =====================================================
 
 def humanize_text(text):
 
-    # Remove markdown bold
-    text = re.sub(r"\*\*", "", text)
+    # =====================================
+    # REMOVE MARKDOWN
+    # =====================================
 
-    # Remove unwanted symbols
-    text = re.sub(r"[#*_>`]", "", text)
+    text = text.replace("**", "")
 
-    # Better pauses for TTS
-    text = text.replace(":", ". ")
+    # =====================================
+    # REMOVE BRACKET ACTIONS
+    # =====================================
 
-    # Remove multiple newlines
-    text = re.sub(r"\n+", "\n", text)
+    text = re.sub(r"\(.*?\)", "", text)
+    text = re.sub(r"\[.*?\]", "", text)
 
-    # Remove multiple spaces
-    text = re.sub(r"\s+", " ", text)
+    # =====================================
+    # REMOVE EXTRA SPACES
+    # =====================================
 
-    return text.strip()
+    text = re.sub(r"\s+", " ", text).strip()
+
+    # =====================================
+    # NATURAL SPEECH PAUSES
+    # =====================================
+
+    text = text.replace(".", "... ")
+    text = text.replace("?", "? ")
+    text = text.replace("!", "! ")
+
+    # =====================================
+    # HUMAN FILLERS
+    # =====================================
+
+    fillers = [
+
+        "Well, ",
+        "Honestly, ",
+        "You know, ",
+        "I mean, ",
+        "Actually, "
+    ]
+
+    if random.random() > 0.75:
+
+        text = random.choice(fillers) + text
+
+    # =====================================
+    # EMPHASIS WORDS
+    # =====================================
+
+    replacements = {
+
+        "very": "really",
+        "important": "super important",
+        "good": "great",
+        "bad": "terrible",
+        "interesting": "pretty interesting"
+    }
+
+    for old, new in replacements.items():
+
+        text = re.sub(
+            rf"\b{old}\b",
+            new,
+            text,
+            flags=re.IGNORECASE
+        )
+
+    # =====================================
+    # REMOVE MULTIPLE DOTS
+    # =====================================
+
+    text = re.sub(r"\.\.\.+", "...", text)
+
+    return text

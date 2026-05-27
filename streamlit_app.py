@@ -1,7 +1,11 @@
+# =========================================================
+# AI DEBATE PODCAST - STREAMLIT APP
+# =========================================================
+
 import streamlit as st
 import asyncio
-import time
 import os
+import time
 
 from debate.generator import generate_debate
 from debate.parser import parse_debate
@@ -9,259 +13,254 @@ from debate.parser import parse_debate
 from voice_generator import generate_voice
 from mixer import merge_audio
 
-from utils.emotion import detect_emotion
 from utils.text_cleaner import humanize_text
+from utils.emotion import detect_emotion
 
 
-# =====================================================
+# =========================================================
 # PAGE CONFIG
-# =====================================================
+# =========================================================
 
 st.set_page_config(
     page_title="AI Debate Podcast",
     page_icon="🎙️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 
-# =====================================================
-# CSS
-# =====================================================
+# =========================================================
+# CUSTOM CSS
+# =========================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-.stApp {
+    /* =====================================================
+       MAIN BACKGROUND
+    ===================================================== */
 
-    background:
-        radial-gradient(circle at top left,
-        rgba(0,212,255,0.15),
-        transparent 25%),
+    .stApp {
 
-        radial-gradient(circle at bottom right,
-        rgba(124,77,255,0.18),
-        transparent 25%),
+        background:
+            linear-gradient(
+                135deg,
+                #020617,
+                #050816,
+                #0f172a
+            );
 
-        linear-gradient(
-        135deg,
-        #020617,
-        #050816,
-        #0b1120
-    );
+        color: white;
+    }
 
-    color: white;
-}
 
+    /* =====================================================
+       SIDEBAR
+    ===================================================== */
 
-/* SIDEBAR */
+    section[data-testid="stSidebar"] {
 
-section[data-testid="stSidebar"] {
+        background:
+            rgba(255,255,255,0.04);
 
-    background:
-        rgba(255,255,255,0.05);
+        backdrop-filter: blur(12px);
 
-    backdrop-filter: blur(16px);
+        border-right:
+            1px solid rgba(255,255,255,0.08);
+    }
 
-    border-right:
-        1px solid rgba(255,255,255,0.08);
-}
 
+    /* =====================================================
+       TITLE
+    ===================================================== */
 
-/* TITLE */
+    .main-title {
 
-.main-title {
+        text-align: center;
 
-    font-size: 72px;
+        font-size: 72px;
 
-    font-weight: 900;
+        font-weight: 900;
 
-    text-align: center;
+        margin-top: 20px;
 
-    margin-top: 10px;
+        background:
+            linear-gradient(
+                90deg,
+                #00d4ff,
+                #7c4dff,
+                #ff4d6d
+            );
 
-    background: linear-gradient(
-        90deg,
-        #00d4ff,
-        #7c4dff,
-        #ff4d6d
-    );
+        -webkit-background-clip: text;
 
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+        -webkit-text-fill-color: transparent;
+    }
 
-.subtitle {
 
-    text-align: center;
+    .subtitle {
 
-    font-size: 22px;
+        text-align: center;
 
-    color: #9ca3af;
+        color: #94a3b8;
 
-    margin-top: -10px;
+        font-size: 24px;
 
-    margin-bottom: 40px;
-}
+        margin-bottom: 40px;
+    }
 
 
-/* GLASS CARD */
+    /* =====================================================
+       GLASS CARD
+    ===================================================== */
 
-.glass-card {
+    .glass {
 
-    background:
-        rgba(255,255,255,0.06);
+        background:
+            rgba(255,255,255,0.05);
 
-    border:
-        1px solid rgba(255,255,255,0.08);
+        border:
+            1px solid rgba(255,255,255,0.08);
 
-    backdrop-filter: blur(18px);
+        border-radius: 24px;
 
-    border-radius: 24px;
+        padding: 25px;
 
-    padding: 28px;
+        backdrop-filter: blur(14px);
 
-    margin-bottom: 25px;
-}
+        margin-bottom: 25px;
+    }
 
 
-/* BUTTON */
+    /* =====================================================
+       SECTION TITLES
+    ===================================================== */
 
-.stButton > button {
+    .section-title {
 
-    width: 100%;
+        font-size: 38px;
 
-    height: 62px;
+        font-weight: 800;
 
-    border-radius: 18px;
+        margin-bottom: 20px;
 
-    border: none;
+        color: white;
+    }
 
-    font-size: 22px;
 
-    font-weight: bold;
+    /* =====================================================
+       BUTTON
+    ===================================================== */
 
-    color: white;
+    .stButton > button {
 
-    background:
-        linear-gradient(
-            90deg,
-            #00d4ff,
-            #7c4dff
-        );
-}
+        width: 100%;
 
+        height: 60px;
 
-/* INPUT */
+        border-radius: 18px;
 
-.stTextInput > div > div > input {
+        border: none;
 
-    background:
-        rgba(255,255,255,0.06);
+        font-size: 22px;
 
-    border:
-        1px solid rgba(255,255,255,0.08);
+        font-weight: bold;
 
-    border-radius: 16px;
+        color: white;
 
-    height: 55px;
+        background:
+            linear-gradient(
+                90deg,
+                #00d4ff,
+                #7c4dff
+            );
 
-    color: white;
+        transition: 0.3s;
+    }
 
-    font-size: 18px;
-}
 
+    .stButton > button:hover {
 
-/* TEXT AREA */
+        transform: scale(1.02);
 
-textarea {
+        box-shadow:
+            0px 0px 20px rgba(0,212,255,0.4);
+    }
 
-    background:
-        rgba(255,255,255,0.04) !important;
 
-    border-radius: 18px !important;
+    /* =====================================================
+       INPUT
+    ===================================================== */
 
-    color: white !important;
+    .stTextInput > div > div > input {
 
-    font-size: 17px !important;
-}
+        background:
+            rgba(255,255,255,0.06);
 
+        border:
+            1px solid rgba(255,255,255,0.08);
 
-/* SECTION TITLES */
+        border-radius: 16px;
 
-.section-title {
+        height: 55px;
 
-    font-size: 40px;
+        color: white;
 
-    font-weight: 800;
+        font-size: 18px;
+    }
 
-    margin-bottom: 20px;
 
-    background: linear-gradient(
-        90deg,
-        #ffffff,
-        #00d4ff
-    );
+    /* =====================================================
+       TEXTAREA
+    ===================================================== */
 
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+    textarea {
 
+        background:
+            rgba(255,255,255,0.04) !important;
 
-/* AUDIO */
+        color: white !important;
 
-audio {
+        border-radius: 18px !important;
+    }
 
-    width: 100%;
-}
 
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-/* FOOTER */
 
-.footer {
-
-    text-align: center;
-
-    margin-top: 60px;
-
-    color: #94a3b8;
-
-    opacity: 0.7;
-
-    font-size: 16px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# =====================================================
+# =========================================================
 # HEADER
-# =====================================================
+# =========================================================
 
-st.markdown("""
-<div class="main-title">
-🎙️ AI Debate Podcast
-</div>
+st.markdown(
+    """
+    <div class="main-title">
+        🎙️ AI Debate Podcast
+    </div>
 
-<div class="subtitle">
-Realistic Multi-Speaker AI Podcast Generator
-</div>
-""", unsafe_allow_html=True)
+    <div class="subtitle">
+        Realistic Multi-Speaker AI Podcast Generator
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
-# =====================================================
+# =========================================================
 # SIDEBAR
-# =====================================================
+# =========================================================
 
 st.sidebar.title("⚙️ Podcast Settings")
 
-speaker_style = st.sidebar.selectbox(
+debate_style = st.sidebar.selectbox(
     "Debate Style",
     [
         "Professional",
-        "Aggressive",
         "Friendly",
+        "Aggressive",
         "Humorous"
     ]
 )
@@ -281,11 +280,11 @@ debate_length = st.sidebar.slider(
 )
 
 
-# =====================================================
+# =========================================================
 # INPUT
-# =====================================================
+# =========================================================
 
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+st.markdown('<div class="glass">', unsafe_allow_html=True)
 
 topic = st.text_input(
     "🎯 Enter Debate Topic",
@@ -299,35 +298,37 @@ generate = st.button(
 st.markdown('</div>', unsafe_allow_html=True)
 
 
-# =====================================================
-# MAIN
-# =====================================================
+# =========================================================
+# MAIN GENERATION
+# =========================================================
 
 if generate and topic:
 
-    # =========================================
+    # =====================================================
     # DELETE OLD AUDIO FILES
-    # =========================================
+    # =====================================================
 
     for file in os.listdir():
 
         if file.endswith(".mp3"):
 
             try:
+
                 os.remove(file)
 
             except:
+
                 pass
 
     progress = st.progress(0)
 
     status = st.empty()
 
-    # =========================================
+    # =====================================================
     # GENERATE DEBATE
-    # =========================================
+    # =====================================================
 
-    status.info("🧠 Generating debate...")
+    status.info("🧠 Generating AI Debate...")
 
     progress.progress(20)
 
@@ -335,16 +336,16 @@ if generate and topic:
 
     time.sleep(1)
 
-    # =========================================
+    # =====================================================
     # SHOW TRANSCRIPT
-    # =========================================
+    # =====================================================
 
     st.markdown(
         '<div class="section-title">🧠 Debate Transcript</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
 
     st.text_area(
         "Generated Debate",
@@ -354,11 +355,11 @@ if generate and topic:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # =========================================
-    # PARSE
-    # =========================================
+    # =====================================================
+    # PARSE DEBATE
+    # =====================================================
 
-    status.info("🎙️ Parsing debate...")
+    status.info("🎙️ Parsing Speakers...")
 
     progress.progress(40)
 
@@ -370,9 +371,9 @@ if generate and topic:
 
         st.stop()
 
-    # =========================================
-    # VOICES
-    # =========================================
+    # =====================================================
+    # VOICE MAP
+    # =====================================================
 
     voice_map = {
 
@@ -385,11 +386,11 @@ if generate and topic:
 
     audio_files = []
 
-    # =========================================
+    # =====================================================
     # GENERATE AUDIO
-    # =========================================
+    # =====================================================
 
-    status.info("🎧 Generating AI voices...")
+    status.info("🎧 Generating Emotional Voices...")
 
     progress.progress(70)
 
@@ -401,32 +402,17 @@ if generate and topic:
 
             text = dialogue["text"]
 
+            # CLEAN TEXT
             text = humanize_text(text)
 
             if not text.strip():
+
                 continue
 
+            # DETECT EMOTION
             emotion = detect_emotion(text)
 
-            rate = "+0%"
-            pitch = "+0Hz"
-            volume = "+0%"
-
-            if emotion == "excited":
-
-                rate = "+10%"
-                pitch = "+8Hz"
-
-            elif emotion == "angry":
-
-                rate = "+5%"
-                pitch = "-5Hz"
-
-            elif emotion == "sad":
-
-                rate = "-10%"
-                pitch = "-10Hz"
-
+            # SELECT VOICE
             voice = voice_map.get(
                 speaker,
                 "en-US-GuyNeural"
@@ -434,17 +420,13 @@ if generate and topic:
 
             output_file = f"audio_{i}.mp3"
 
-            print(f"\nGenerating voice for {speaker}")
-            print(text)
-
+            # GENERATE TTS
             asyncio.run(
                 generate_voice(
                     text=text,
                     voice=voice,
                     output_file=output_file,
-                    rate=rate,
-                    pitch=pitch,
-                    volume=volume
+                    emotion=emotion
                 )
             )
 
@@ -454,13 +436,13 @@ if generate and topic:
 
         except Exception as e:
 
-            st.error(f"Audio generation failed: {e}")
+            st.error(f"Voice generation failed: {e}")
 
-    # =========================================
+    # =====================================================
     # MERGE AUDIO
-    # =========================================
+    # =====================================================
 
-    status.info("🎵 Mixing podcast...")
+    status.info("🎵 Mixing Podcast Audio...")
 
     progress.progress(90)
 
@@ -475,16 +457,16 @@ if generate and topic:
 
     status.success("✅ Podcast Generated Successfully!")
 
-    # =========================================
+    # =====================================================
     # AUDIO PLAYER
-    # =========================================
+    # =====================================================
 
     st.markdown(
         '<div class="section-title">🎧 Generated Podcast</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
 
     if os.path.exists("final_podcast.mp3"):
 
@@ -509,14 +491,3 @@ if generate and topic:
         st.error("Podcast generation failed.")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-
-# =====================================================
-# FOOTER
-# =====================================================
-
-st.markdown("""
-<div class="footer">
-Built with ❤️ using Streamlit · Groq · ChromaDB · Edge-TTS
-</div>
-""", unsafe_allow_html=True)
